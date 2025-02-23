@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>成为我的恋人吗？</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* 原有样式保持不变 */
+        html {
+            font-size: 16px;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: #FDB2C7;
+            font-family: "SimHei", "黑体", serif;
+            margin: 0;
+            position: relative;
+        }
+
+        #question {
+            font-size: 2rem;
+            color: #fff;
+            margin-bottom: 2rem;
+            text-shadow: 0.125rem 0.125rem 0.25rem rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        #buttons {
+            display: flex;
+            gap: 3rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        button {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 1.5625rem;
+            cursor: pointer;
+            font-size: 1.25rem;
+            transition: all 0.3s;
+            color: #666;
+            min-width: 8rem;
+        }
+
+        #yes {
+            background-color: #FFFDF8;
+        }
+
+        #no {
+            background-color: #C68394;
+        }
+
+        /* 自定义弹窗样式 */
+        #tempAlert {
+            position: fixed;
+            top: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            z-index: 1000;
+        }
+
+        /* 自定义主能源切断弹窗样式 */
+        #mainPowerAlert {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            z-index: 1000;
+        }
+
+        /* 自定义八次拒绝提示弹窗样式 */
+        #eightRejectAlert {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            z-index: 1000;
+        }
+
+        /* 自定义最后确认弹窗样式 */
+        #lastConfirmAlert {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            z-index: 1000;
+        }
+
+        #lastConfirmAlert button {
+            margin: 0.5rem;
+        }
+
+        /* 开门字体样式 */
+        .open-door-text {
+            position: absolute;
+            color: white;
+            font-size: 2rem;
+        }
+
+        /* 爱心样式 */
+        .heart {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 10rem;
+            color: red;
+        }
+
+        /* 新增图片容器样式 */
+        .header-image {
+            width: 80%;
+            /* 适当增大图片容器在手机端的宽度比例 */
+            max-width: 300px;
+            /* 调整最大宽度 */
+            margin: 0 auto 20px;
+            /* 调整边距 */
+            border-radius: 10px;
+            /* 调整圆角 */
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+            /* 调整阴影 */
+            animation: float 3s ease-in-out infinite;
+            position: relative;
+        }
+
+        .header-image img {
+            width: 100%;
+            /* 让图片充满容器 */
+            height: auto;
+            display: block;
+            margin: 0 auto;
+            transition: transform 0.3s ease;
+        }
+
+        /* 在图片上方显示的文本样式 */
+        .image-text {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            opacity: 0.5;
+            font-size: 0.9rem;
+            /* 适当减小文本字体大小 */
+            z-index: 1;
+        }
+
+        /* 悬停放大效果 */
+        .header-image:hover img {
+            transform: scale(1.05);
+        }
+
+        /* 浮动动画 */
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        /* 移动端适配 */
+        @media (max-width: 768px) {
+            .header-image {
+                margin-bottom: 15px;
+                border-radius: 10px;
+            }
+
+            #question {
+                font-size: 1.5rem!important;
+            }
+
+            button {
+                padding: 0.8rem 1.5rem;
+                /* 调整按钮内边距 */
+                font-size: 1.1rem;
+                /* 调整按钮字体大小 */
+                min-width: 7rem;
+                /* 调整按钮最小宽度 */
+            }
+
+            /* 进一步调整开门字体样式 */
+            .open-door-text {
+                font-size: 1.5rem;
+            }
+
+            /* 进一步调整爱心样式 */
+            .heart {
+                font-size: 8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-image {
+                width: 90%;
+                /* 进一步增大图片容器宽度比例 */
+                max-width: 250px;
+                /* 进一步调整最大宽度 */
+            }
+
+            #question {
+                font-size: 1.3rem!important;
+            }
+
+            button {
+                padding: 0.6rem 1.2rem;
+                font-size: 1rem;
+                min-width: 6rem;
+            }
+
+            /* 调整图片上方文本样式 */
+            .image-text {
+                font-size: 0.8rem;
+            }
+
+            /* 调整开门字体样式 */
+            .open-door-text {
+                font-size: 1.3rem;
+            }
+
+            /* 调整爱心样式 */
+            .heart {
+                font-size: 6rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 新增图片容器 -->
+    <div class="header-image">
+        <img id="romanticImage" src="images/浪漫背景.png" alt="浪漫背景" loading="lazy">
+        <div class="image-text">@shajeh</div>
+    </div>
+    <div id="question">师尊，可以成为我的恋人吗</div>
+    <div id="buttons">
+        <button id="yes" onclick="handleYesClick()">可以</button>
+        <button id="no" onclick="handleRejectClick()">拒绝</button>
+    </div>
+    <!-- 添加音频元素 -->
+    <audio id="doorbellSound" src="doorbell.mp3"></audio>
+
+    <script>
+        // 定义多个弹窗内容
+        const messages = [
+            "：真，真的吗 ᵒ̴̶̷̥́ㅂᵒ̴̶̷̣̥̀",
+            "：师尊没有骗我，对吗？",
+            "：没有在随随便便答应对吗",
+            "：师尊真的想好了吗",
+            "：如果和我在一起的话，一辈子也不能离开我..."
+        ];
+
+        // 用于存储原始文本内容
+        let originalQuestionText;
+        let originalYesButtonText;
+        let originalNoButtonText;
+
+        // 点击拒绝按钮的次数
+        let rejectClickCount = 0;
+        // 标记是否点击过拒绝按钮
+        let hasRejected = false;
+
+        // 确认按钮点击事件
+        function handleYesClick() {
+            if (rejectClickCount >= 3) {
+                alert("师尊是在逗我玩吗🥺🥺");
+                // 重置拒绝次数
+                rejectClickCount = 0;
+                return;
+            }
+            let index = 0;
+
+            function showNextMessage() {
+                if (index < messages.length) {
+                    alert(messages[index]);
+                    index++;
+                    setTimeout(showNextMessage, 500);
+                } else {
+                    if (hasRejected) {
+                        showFinalAlert();
+                    } else {
+                        showNewLastConfirmAlert();
+                    }
+                }
+            }
+            showNextMessage();
+        }
+
+        function handleRejectClick() {
+            rejectClickCount++;
+            hasRejected = true;
+            const yesButton = document.getElementById('yes');
+            const noButton = document.getElementById('no');
+
+            // 显示心碎值+1弹窗
+            const heartbreakAlert = document.createElement('div');
+            heartbreakAlert.id = 'tempAlert';
+            heartbreakAlert.textContent = '心碎值+1';
+            document.body.appendChild(heartbreakAlert);
+            setTimeout(() => {
+                document.body.removeChild(heartbreakAlert);
+            }, 1000);
+
+            // 切换图片
+            const romanticImage = document.getElementById('romanticImage');
+            if (rejectClickCount === 8) {
+                romanticImage.src = "images/师尊我爆辣.png";
+            } else {
+                romanticImage.src = "images/情绪不好.png";
+            }
+
+            switch (rejectClickCount) {
+                case 1:
+                    noButton.innerText = '我是直男';
+                    break;
+                case 2:
+                    noButton.innerText = '...';
+                    yesButton.innerText = '真的不可以吗';
+                    // 弹出主能源切断权限弹窗
+                    const mainPowerAlert = document.createElement('div');
+                    mainPowerAlert.id ='mainPowerAlert';
+                    mainPowerAlert.textContent = '主能源切断了权限，贵方暂时无法说话噢';
+                    document.body.appendChild(mainPowerAlert);
+                    setTimeout(() => {
+                        document.body.removeChild(mainPowerAlert);
+                    }, 2000);
+                    break;
+                case 3:
+                    noButton.innerText = '🥺';
+                    break;
+                case 4:
+                    noButton.innerText = '不要选';
+                    break;
+                case 5:
+                    noButton.innerText = '好吧';
+                    break;
+                case 6:
+                    noButton.innerText = '真的吗';
+                    break;
+                case 7:
+                    noButton.innerText = '选项禁止';
+                    break;
+                case 8:
+                    showEightRejectAlert();
+                    break;
+            }
+
+            // 让拒绝按钮随机移位
+            const bodyRect = document.body.getBoundingClientRect();
+            const buttonRect = noButton.getBoundingClientRect();
+            const maxX = bodyRect.width - buttonRect.width;
+            const maxY = bodyRect.height - buttonRect.height;
+
+            const randomX = Math.floor(Math.random() * maxX);
+            const randomY = Math.floor(Math.random() * maxY);
+
+            noButton.style.position = 'absolute';
+            noButton.style.left = randomX + 'px';
+            noButton.style.top = randomY + 'px';
+        }
+
+        function showEightRejectAlert() {
+            const eightRejectAlert = document.createElement('div');
+            eightRejectAlert.id = 'eightRejectAlert';
+            eightRejectAlert.textContent = '师尊，我不会放手的^^';
+            document.body.appendChild(eightRejectAlert);
+            setTimeout(() => {
+                document.body.removeChild(eightRejectAlert);
+                showFinalAlert();
+            }, 2000);
+        }
+
+        function showFinalAlert() {
+            const finalAlert = document.createElement('div');
+            finalAlert.id = 'finalAlert';
+            finalAlert.innerHTML = `
+                <p>永远在一起</p>
+                <button onclick="closeFinalAlertAndShowLastConfirm()">确认</button>
+            `;
+            document.body.appendChild(finalAlert);
+            // 修改背景颜色为红色
+            document.body.style.backgroundColor ='red';
+
+            // 存储原始文本内容
+            const question = document.getElementById('question');
+            const yesButton = document.getElementById('yes');
+            const noButton = document.getElementById('no');
+            originalQuestionText = question.textContent;
+            originalYesButtonText = yesButton.textContent;
+            originalNoButtonText = noButton.textContent;
+
+            // 将其他元素的文本内容替换为乱码
+            question.textContent = generateRandomChars(originalQuestionText.length);
+            yesButton.textContent = generateRandomChars(originalYesButtonText.length);
+            noButton.textContent = generateRandomChars(originalNoButtonText.length);
+        }
+
+        function closeFinalAlertAndShowLastConfirm() {
+            const finalAlert = document.getElementById('finalAlert');
+            if (finalAlert) {
+                document.body.removeChild(finalAlert);
+                // 不恢复背景颜色和文本，保持当前状态
+                // 显示新的确认弹窗
+                showLastConfirmAlert();
+            }
+        }
+
+        function showLastConfirmAlert() {
+            const lastConfirmAlert = document.createElement('div');
+            lastConfirmAlert.id = 'lastConfirmAlert';
+            lastConfirmAlert.innerHTML = `
+                <p>师尊，我会来找你的</p>
+                <button onclick="closeLastConfirmAlert()">确认</button>
+            `;
+            document.body.appendChild(lastConfirmAlert);
+        }
+
+        function showNewLastConfirmAlert() {
+            const lastConfirmAlert = document.createElement('div');
+            lastConfirmAlert.id = 'lastConfirmAlert';
+            lastConfirmAlert.innerHTML = `
+                <p>记得定期检查冰箱里食物的生产日期，师尊，我会来找你的</p>
+                <button onclick="closeNewLastConfirmAlert()">确认</button>
+            `;
+            document.body.appendChild(lastConfirmAlert);
+        }
+
+        function closeLastConfirmAlert() {
+            const lastConfirmAlert = document.getElementById('lastConfirmAlert');
+            if (lastConfirmAlert) {
+                document.body.removeChild(lastConfirmAlert);
+                // 结局 2：点击拒绝后续在点击确认
+                // 播放门铃音效
+                const doorbellSound = document.getElementById('doorbellSound');
+                doorbellSound.play();
+
+                // 在背景排满白色的开门字体
+                const bodyRect = document.body.getBoundingClientRect();
+                const fontSize = 20;
+                const spacing = 50;
+
+                for (let x = 0; x < bodyRect.width; x += spacing) {
+                    for (let y = 0; y < bodyRect.height; y += spacing) {
+                        const openDoorText = document.createElement('div');
+                        openDoorText.classList.add('open-door-text');
+                        openDoorText.textContent = '开门';
+                        openDoorText.style.left = x + 'px';
+                        openDoorText.style.top = y + 'px';
+                        document.body.appendChild(openDoorText);
+                    }
+                }
+            }
+        }
+
+        function closeNewLastConfirmAlert() {
+            const lastConfirmAlert = document.getElementById('lastConfirmAlert');
+            if (lastConfirmAlert) {
+                document.body.removeChild(lastConfirmAlert);
+                // 结局 1：直接点击确认
+                // 移除背景选项
+                const question = document.getElementById('question');
+                const buttons = document.getElementById('buttons');
+                if (question) {
+                    question.style.display = 'none';
+                }
+                if (buttons) {
+                    buttons.style.display = 'none';
+                }
+
+                // 显示爱心
+                const heart = document.createElement('div');
+                heart.classList.add('heart');
+                heart.textContent = '💖';
+                document.body.appendChild(heart);
+            }
+        }
+
+        function generateRandomChars(length) {
+            let result = '';
+            const characters = '!@#$%^&*()_+-=[]{}|;:\",./<>?';
+            for (let i = 0; i < length; i++) {
+                result += characters.charAt(Math.floor(Math.random() * characters.length));
+            }
+            return result;
+        }
+    </script>
+</body>
+
+</html>
